@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Control Library{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Control Library</h3>
+    {% if user.is_manager_or_above %}
+        <a href="{% url 'grc:control_create' %}" class="btn btn-primary">+ New Control</a>
+    {% endif %}
+</div>
+
+<table class="table table-hover align-middle">
+    <thead>
+        <tr><th>Title</th><th>Risk</th><th>Type</th><th>Effectiveness</th><th>Owner</th><th>Last tested</th></tr>
+    </thead>
+    <tbody>
+        {% for control in controls %}
+        <tr>
+            <td><a href="{{ control.get_absolute_url }}">{{ control.title }}</a></td>
+            <td><a href="{{ control.risk.get_absolute_url }}">{{ control.risk.title }}</a></td>
+            <td>{{ control.get_control_type_display }}</td>
+            <td>
+                <span class="badge {% if control.effectiveness == 'effective' %}bg-success{% elif control.effectiveness == 'ineffective' %}bg-danger{% elif control.effectiveness == 'partially_effective' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                    {{ control.get_effectiveness_display }}
+                </span>
+            </td>
+            <td>{{ control.owner.get_short_name }}</td>
+            <td>{{ control.last_tested_at|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-muted">No controls yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% include "partials/pagination.html" %}
+{% endblock %}

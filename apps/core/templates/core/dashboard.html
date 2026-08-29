@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h2 class="mb-4">Welcome back, {{ user.get_short_name }}</h2>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-bg-light">
+            <div class="card-body">
+                <h6 class="card-subtitle text-muted">Open risks</h6>
+                <h2>{{ open_risk_count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-light">
+            <div class="card-body">
+                <h6 class="card-subtitle text-muted">Ineffective controls</h6>
+                <h2>{{ ineffective_control_count }}</h2>
+                <small class="text-muted">of {{ control_count }} total</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-light">
+            <div class="card-body">
+                <h6 class="card-subtitle text-muted">My open tasks</h6>
+                <h2>{{ my_open_task_count }}</h2>
+                {% if my_overdue_task_count %}
+                    <small class="text-danger">{{ my_overdue_task_count }} overdue</small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-light">
+            <div class="card-body">
+                <h6 class="card-subtitle text-muted">Business units / Committees</h6>
+                <h2>{{ business_unit_count }} / {{ committee_count }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <h5>High-severity open risks</h5>
+        {% if high_severity_open_risks %}
+            <ul class="list-group">
+                {% for risk in high_severity_open_risks %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{{ risk.get_absolute_url }}">{{ risk.title }}</a>
+                        <span class="badge bg-secondary">{{ risk.business_unit.code }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">No high-severity open risks. 🎉</p>
+        {% endif %}
+    </div>
+    <div class="col-md-6">
+        <h5>My upcoming tasks</h5>
+        {% if my_upcoming_tasks %}
+            <ul class="list-group">
+                {% for task in my_upcoming_tasks %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{{ task.get_absolute_url }}">{{ task.title }}</a>
+                        <span class="badge {% if task.is_overdue %}bg-danger{% else %}bg-secondary{% endif %}">
+                            {{ task.due_date|default:"No due date" }}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">No open tasks. Nice and clear!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

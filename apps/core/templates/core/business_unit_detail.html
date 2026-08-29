@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ business_unit.name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h3>{{ business_unit.code }} — {{ business_unit.name }}</h3>
+        <p class="text-muted">Head: {{ business_unit.head|default:"Unassigned" }}</p>
+    </div>
+    {% if user.is_manager_or_above %}
+        <div>
+            <a href="{% url 'core:business_unit_update' business_unit.pk %}" class="btn btn-outline-secondary btn-sm">Edit</a>
+            {% if user.is_admin_role %}
+                <a href="{% url 'core:business_unit_delete' business_unit.pk %}" class="btn btn-outline-danger btn-sm">Delete</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+<p>{{ business_unit.description|linebreaks|default:"No description." }}</p>
+
+<h5 class="mt-4">Functions</h5>
+<ul class="list-group mb-4">
+    {% for function in business_unit.functions.all %}
+        <li class="list-group-item"><a href="{{ function.get_absolute_url }}">{{ function.name }}</a></li>
+    {% empty %}
+        <li class="list-group-item text-muted">No functions yet.</li>
+    {% endfor %}
+</ul>
+
+<h5>Committees</h5>
+<ul class="list-group">
+    {% for committee in business_unit.committees.all %}
+        <li class="list-group-item"><a href="{{ committee.get_absolute_url }}">{{ committee.name }}</a></li>
+    {% empty %}
+        <li class="list-group-item text-muted">No committees yet.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

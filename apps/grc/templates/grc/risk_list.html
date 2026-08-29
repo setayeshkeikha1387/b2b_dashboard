@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Risk Register{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Risk Register</h3>
+    {% if user.is_manager_or_above %}
+        <a href="{% url 'grc:risk_create' %}" class="btn btn-primary">+ New Risk</a>
+    {% endif %}
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search risks...">
+    </div>
+    <div class="col-md-3">
+        <select name="status" class="form-select">
+            <option value="">All statuses</option>
+            {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if value == current_status %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="severity" class="form-select">
+            <option value="">All severities</option>
+            {% for value, label in severity_choices %}
+                <option value="{{ value }}" {% if value == current_severity %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-outline-secondary w-100">Filter</button>
+    </div>
+</form>
+
+<table class="table table-hover align-middle">
+    <thead>
+        <tr><th>Title</th><th>Business Unit</th><th>Severity</th><th>Likelihood</th><th>Score</th><th>Status</th><th>Owner</th></tr>
+    </thead>
+    <tbody>
+        {% for risk in risks %}
+        <tr>
+            <td><a href="{{ risk.get_absolute_url }}">{{ risk.title }}</a></td>
+            <td>{{ risk.business_unit.code }}</td>
+            <td><span class="badge text-bg-secondary">{{ risk.get_severity_display }}</span></td>
+            <td>{{ risk.get_likelihood_display }}</td>
+            <td>{{ risk.risk_score }}</td>
+            <td>
+                <span class="badge {% if risk.status == 'open' %}bg-danger{% elif risk.status == 'mitigating' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                    {{ risk.get_status_display }}
+                </span>
+            </td>
+            <td>{{ risk.owner.get_short_name }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-muted">No risks match these filters.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% include "partials/pagination.html" %}
+{% endblock %}

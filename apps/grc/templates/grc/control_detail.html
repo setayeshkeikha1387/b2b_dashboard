@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ control.title }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>{{ control.title }}</h3>
+    {% if user.is_manager_or_above %}
+        <div>
+            <a href="{% url 'grc:control_update' control.pk %}" class="btn btn-outline-secondary">Edit</a>
+            {% if user.is_admin_role %}
+                <a href="{% url 'grc:control_delete' control.pk %}" class="btn btn-outline-danger">Delete</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+<div class="card">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Risk</dt><dd class="col-sm-9"><a href="{{ control.risk.get_absolute_url }}">{{ control.risk.title }}</a></dd>
+            <dt class="col-sm-3">Owner</dt><dd class="col-sm-9">{{ control.owner.get_full_name|default:control.owner }}</dd>
+            <dt class="col-sm-3">Type</dt><dd class="col-sm-9">{{ control.get_control_type_display }}</dd>
+            <dt class="col-sm-3">Effectiveness</dt><dd class="col-sm-9">{{ control.get_effectiveness_display }}</dd>
+            <dt class="col-sm-3">Last tested</dt><dd class="col-sm-9">{{ control.last_tested_at|default:"Never" }}</dd>
+            <dt class="col-sm-3">Description</dt><dd class="col-sm-9">{{ control.description|default:"—"|linebreaksbr }}</dd>
+        </dl>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Business Units{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Business Units</h3>
+    {% if user.is_manager_or_above %}
+        <a href="{% url 'core:business_unit_create' %}" class="btn btn-primary">+ New Business Unit</a>
+    {% endif %}
+</div>
+
+<form method="get" class="mb-3">
+    <input type="text" name="q" value="{{ request.GET.q }}" class="form-control" placeholder="Search by name or code...">
+</form>
+
+<table class="table table-hover align-middle">
+    <thead>
+        <tr><th>Code</th><th>Name</th><th>Head</th><th>Functions</th></tr>
+    </thead>
+    <tbody>
+        {% for bu in business_units %}
+        <tr>
+            <td>{{ bu.code }}</td>
+            <td><a href="{{ bu.get_absolute_url }}">{{ bu.name }}</a></td>
+            <td>{{ bu.head|default:"—" }}</td>
+            <td>{{ bu.function_count }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-muted">No business units yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% include "partials/pagination.html" %}
+{% endblock %}
